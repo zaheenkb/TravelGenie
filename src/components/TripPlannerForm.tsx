@@ -45,16 +45,6 @@ export default function TripPlannerForm({ onPlanTrip, isGenerating }: TripPlanne
   const isFormValid = inputs.destination && inputs.startDate && inputs.endDate;
 
   return (
-    <div className="bg-white rounded-3xl shadow-2xl p-8 border border-travel-100">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-travel-gradient rounded-2xl mb-4 shadow-lg">
-          <span className="text-2xl">✈️</span>
-        </div>
-        <h1 className="text-4xl font-heading font-bold text-gray-800 mb-2">Plan Your Journey</h1>
-        <p className="text-travel-600 text-lg">Let us create your perfect adventure</p>
-        </div>
-        <h1 className="text-4xl font-heading font-bold text-gray-800 mb-2">Plan Your Journey</h1>
-        <p className="text-travel-600 text-lg">Let us create your perfect adventure</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
