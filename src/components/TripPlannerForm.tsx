@@ -52,6 +52,9 @@ export default function TripPlannerForm({ onPlanTrip, isGenerating }: TripPlanne
         </div>
         <h1 className="text-4xl font-heading font-bold text-gray-800 mb-2">Plan Your Journey</h1>
         <p className="text-travel-600 text-lg">Let us create your perfect adventure</p>
+        </div>
+        <h1 className="text-4xl font-heading font-bold text-gray-800 mb-2">Plan Your Journey</h1>
+        <p className="text-travel-600 text-lg">Let us create your perfect adventure</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

@@ -139,6 +139,12 @@ function App() {
                 <span className="text-xl font-heading font-bold text-gray-800">Travel Genie</span>
                 <span className="text-xs text-travel-600 -mt-1">Your AI Travel Companion</span>
               </div>
+                <Luggage className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-heading font-bold text-gray-800">Travel Genie</span>
+                <span className="text-xs text-travel-600 -mt-1">Your AI Travel Companion</span>
+              </div>
             </button>
             
             <div className="flex items-center space-x-4">
@@ -205,6 +211,15 @@ function App() {
           />
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-50 border-t border-gray-200 py-6 mt-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-gray-600 font-medium">
+            Proudly Mentored <span className="text-travel-600 font-semibold">Outskill</span>
+          </p>
+        </div>
+      </footer>
 
       {/* Footer */}
       <footer className="bg-gray-50 border-t border-gray-200 py-6 mt-12">
