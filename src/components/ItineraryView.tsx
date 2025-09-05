@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, MapPin, DollarSign, Save, ArrowLeft, Users, Cloud, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clock, MapPin, DollarSign, Save, ArrowLeft, Users, Cloud, Calendar, ChevronDown, ChevronUp, RefreshCw, X, Check } from 'lucide-react';
 import { Trip } from '../types';
 import { downloadICSFile } from '../utils/calendarExport';
+import { generateAlternativeActivities } from '../utils/activitySuggestions';
 
 interface ItineraryViewProps {
   trip: Trip;
@@ -13,6 +14,8 @@ interface ItineraryViewProps {
 export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: ItineraryViewProps) {
   const [collapsedDays, setCollapsedDays] = useState<Set<number>>(new Set());
   const [isMobile, setIsMobile] = useState(false);
+  const [swapSuggestions, setSwapSuggestions] = useState<{[key: string]: any[]}>({});
+  const [loadingSuggestions, setLoadingSuggestions] = useState<Set<string>>(new Set());
 
   // Check if mobile and set initial collapsed state
   useEffect(() => {
@@ -42,6 +45,60 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
         newSet.add(dayNumber);
       }
       return newSet;
+    });
+  };
+
+  const handleSwapSuggestion = async (activityId: string, currentActivity: any) => {
+    setLoadingSuggestions(prev => new Set(prev).add(activityId));
+    
+    try {
+      const suggestions = await generateAlternativeActivities(
+        currentActivity,
+        trip.destination,
+        trip.budget as 'low' | 'medium' | 'high'
+      );
+      setSwapSuggestions(prev => ({
+        ...prev,
+        [activityId]: suggestions
+      }));
+    } catch (error) {
+      console.error('Failed to generate suggestions:', error);
+    } finally {
+      setLoadingSuggestions(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(activityId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleAcceptSuggestion = (activityId: string, newActivity: any) => {
+    // Update the trip with the new activity
+    const updatedTrip = { ...trip };
+    updatedTrip.itinerary = updatedTrip.itinerary.map(day => ({
+      ...day,
+      activities: day.activities.map(activity => 
+        activity.id === activityId ? { ...newActivity, id: activityId } : activity
+      )
+    }));
+    
+    // Clear suggestions for this activity
+    setSwapSuggestions(prev => {
+      const newSuggestions = { ...prev };
+      delete newSuggestions[activityId];
+      return newSuggestions;
+    });
+    
+    // You might want to trigger a re-render or update the parent component here
+    // For now, we'll just update the local state
+    Object.assign(trip, updatedTrip);
+  };
+
+  const handleCancelSuggestions = (activityId: string) => {
+    setSwapSuggestions(prev => {
+      const newSuggestions = { ...prev };
+      delete newSuggestions[activityId];
+      return newSuggestions;
     });
   };
 
@@ -205,15 +262,25 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
                           
                           {/* Activity Card */}
                           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-200 border border-gray-100">
-                            <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-4">
+                            <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-4 relative">
                               <div className="flex-grow">
                                 <div className="flex items-start justify-between mb-3">
                                   <h3 className="text-xl font-semibold text-gray-800 mb-2">
                                     {activity.name}
                                   </h3>
-                                  <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-medium ml-4 whitespace-nowrap">
-                                    {activity.type}
-                                  </span>
+                                  <div className="flex items-center gap-2 ml-4">
+                                    <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
+                                      {activity.type}
+                                    </span>
+                                    <button
+                                      onClick={() => handleSwapSuggestion(activity.id, activity)}
+                                      disabled={loadingSuggestions.has(activity.id)}
+                                      className="p-2 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors disabled:opacity-50"
+                                      title="Get alternative suggestions"
+                                    >
+                                      <RefreshCw className={`w-4 h-4 ${loadingSuggestions.has(activity.id) ? 'animate-spin' : ''}`} />
+                                    </button>
+                                  </div>
                                 </div>
                                 
                                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
@@ -246,6 +313,51 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
                                 </div>
                               </div>
                             </div>
+                            
+                            {/* Swap Suggestions */}
+                            {swapSuggestions[activity.id] && (
+                              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                <div className="flex items-center justify-between mb-3">
+                                  <h4 className="font-semibold text-blue-800">Alternative Suggestions</h4>
+                                  <button
+                                    onClick={() => handleCancelSuggestions(activity.id)}
+                                    className="text-blue-600 hover:text-blue-800 p-1"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                                <div className="space-y-3">
+                                  {swapSuggestions[activity.id].map((suggestion: any, index: number) => (
+                                    <div key={index} className="bg-white p-3 rounded-lg border border-blue-100">
+                                      <div className="flex items-start justify-between">
+                                        <div className="flex-grow">
+                                          <h5 className="font-medium text-gray-800 mb-1">{suggestion.name}</h5>
+                                          <p className="text-sm text-gray-600 mb-2">{suggestion.description}</p>
+                                          <div className="flex flex-wrap gap-2 text-xs">
+                                            <span className="bg-gray-100 px-2 py-1 rounded">
+                                              {suggestion.duration}
+                                            </span>
+                                            <span className="bg-gray-100 px-2 py-1 rounded">
+                                              {suggestion.cost}
+                                            </span>
+                                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                                              {suggestion.neighborhood}
+                                            </span>
+                                          </div>
+                                        </div>
+                                        <button
+                                          onClick={() => handleAcceptSuggestion(activity.id, suggestion)}
+                                          className="ml-3 p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
+                                          title="Use this suggestion"
+                                        >
+                                          <Check className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
