@@ -82,7 +82,7 @@ export function generateTrip(inputs: TripInputs): Trip {
   
   return {
     id: Date.now().toString(),
-    title: `${inputs.destination} Adventure`,
+    title: inputs.from ? `${inputs.from} to ${inputs.destination} Adventure` : `${inputs.destination} Adventure`,
     destination: inputs.destination,
     startDate: inputs.startDate,
     endDate: inputs.endDate,
