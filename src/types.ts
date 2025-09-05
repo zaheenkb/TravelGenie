@@ -16,13 +16,19 @@ export interface Activity {
   time: string;
   duration: string;
   description: string;
+  neighborhood: string;
   cost: string;
-  transport?: string;
+  travelNote?: string;
 }
 
 export interface DayPlan {
   date: string;
   dayNumber: number;
+  weather?: {
+    condition: string;
+    temperature: string;
+    note: string;
+  };
   activities: Activity[];
 }
 

@@ -4,7 +4,7 @@ import TripPlannerForm from './components/TripPlannerForm';
 import ItineraryView from './components/ItineraryView';
 import SavedTrips from './components/SavedTrips';
 import { TripInputs, Trip } from './types';
-import { generateTrip } from './utils/tripGenerator';
+import { generateItinerary } from './utils/api';
 
 type ViewState = 'planning' | 'itinerary' | 'saved';
 
@@ -30,13 +30,16 @@ function App() {
   const handlePlanTrip = async (inputs: TripInputs) => {
     setIsGenerating(true);
     
-    // Simulate API delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const trip = generateTrip(inputs);
-    setCurrentTrip(trip);
-    setCurrentView('itinerary');
-    setIsGenerating(false);
+    try {
+      const trip = await generateItinerary(inputs);
+      setCurrentTrip(trip);
+      setCurrentView('itinerary');
+    } catch (error) {
+      console.error('Failed to generate trip:', error);
+      // Handle error - could show a toast notification
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSaveTrip = () => {

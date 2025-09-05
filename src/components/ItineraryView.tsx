@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, MapPin, DollarSign, Save, ArrowLeft, Users } from 'lucide-react';
+import { Clock, MapPin, DollarSign, Save, ArrowLeft, Users, Cloud } from 'lucide-react';
 import { Trip } from '../types';
 
 interface ItineraryViewProps {
@@ -92,7 +92,18 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
               <h2 className="text-2xl font-bold text-gray-800 mb-1">
                 Day {day.dayNumber}
               </h2>
-              <p className="text-gray-600">{formatDate(day.date)}</p>
+              <div className="flex items-center justify-between">
+                <p className="text-gray-600">{formatDate(day.date)}</p>
+                {day.weather && (
+                  <div className="flex items-center text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
+                    <Cloud className="w-4 h-4 mr-1" />
+                    {day.weather.condition} • {day.weather.temperature}
+                  </div>
+                )}
+              </div>
+              {day.weather?.note && (
+                <p className="text-sm text-blue-600 mt-1 italic">{day.weather.note}</p>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -130,15 +141,18 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
                         </div>
                         <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded-full text-xs font-medium">
                           {activity.type}
+                          <span className="text-teal-600">
+                            📍 {activity.neighborhood}
+                          </span>
                         </span>
                       </div>
                       
                       <p className="text-gray-700 mb-2">{activity.description}</p>
                       
-                      {activity.transport && (
+                      {activity.travelNote && (
                         <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs inline-flex items-center">
                           <MapPin className="w-3 h-3 mr-1" />
-                          {activity.transport}
+                          {activity.travelNote}
                         </div>
                       )}
                     </div>
