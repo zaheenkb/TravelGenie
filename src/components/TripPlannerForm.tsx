@@ -216,6 +216,5 @@ export default function TripPlannerForm({ onPlanTrip, isGenerating }: TripPlanne
           )}
         </button>
       </form>
-    </div>
   );
 }
