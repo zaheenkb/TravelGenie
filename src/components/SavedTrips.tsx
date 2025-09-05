@@ -42,17 +42,17 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 text-center border border-travel-100">
         <button
           onClick={onBack}
-          className="flex items-center text-teal-600 hover:text-teal-700 transition-colors mb-6"
+          className="flex items-center text-travel-600 hover:text-travel-700 transition-colors mb-6 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Planning
         </button>
 
         <div className="py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-travel-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your trips...</p>
         </div>
       </div>
@@ -61,10 +61,10 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
 
   if (trips.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 text-center border border-travel-100">
         <button
           onClick={onBack}
-          className="flex items-center text-teal-600 hover:text-teal-700 transition-colors mb-6"
+          className="flex items-center text-travel-600 hover:text-travel-700 transition-colors mb-6 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Planning
@@ -72,13 +72,13 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
 
         <div className="py-12">
           <div className="text-6xl mb-4">🧳</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">No Saved Trips Yet</h2>
+          <h2 className="text-2xl font-heading font-bold text-gray-800 mb-2">No Saved Trips Yet</h2>
           <p className="text-gray-600 mb-6">
             Start planning your next adventure and save it to see it here!
           </p>
           <button
             onClick={onBack}
-            className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            className="bg-travel-gradient text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
           >
             Plan Your First Trip
           </button>
@@ -89,10 +89,10 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-xl p-8">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 border border-travel-100">
         <button
           onClick={onBack}
-          className="flex items-center text-teal-600 hover:text-teal-700 transition-colors mb-4"
+          className="flex items-center text-travel-600 hover:text-travel-700 transition-colors mb-4 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Planning
@@ -100,7 +100,10 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
 
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Saved Trips</h1>
+            <div className="flex items-center mb-2">
+              <span className="text-3xl mr-3">🗂️</span>
+              <h1 className="text-3xl font-heading font-bold text-gray-800">Saved Trips</h1>
+            </div>
             <p className="text-gray-600">
               {filteredTrips.length} of {trips.length} trips
               {searchQuery && ` matching "${searchQuery}"`}
@@ -119,7 +122,7 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
             placeholder="Search trips by destination..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+            className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-travel-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
           />
           {searchQuery && (
             <button
@@ -134,15 +137,15 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
 
       {/* No Results Message */}
       {filteredTrips.length === 0 && searchQuery && (
-        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 text-center border border-travel-100">
           <div className="text-4xl mb-4">🔍</div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">No trips found</h3>
+          <h3 className="text-xl font-heading font-bold text-gray-800 mb-2">No trips found</h3>
           <p className="text-gray-600 mb-4">
             No trips match your search for "{searchQuery}"
           </p>
           <button
             onClick={() => setSearchQuery('')}
-            className="text-teal-600 hover:text-teal-700 font-semibold"
+            className="text-travel-600 hover:text-travel-700 font-semibold"
           >
             Clear search
           </button>
@@ -153,12 +156,12 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
         {filteredTrips.map((trip) => (
           <div
             key={trip.id}
-            className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+            className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-travel-100"
           >
             <div className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
+                  <h3 className="text-xl font-heading font-bold text-gray-800 mb-2 line-clamp-2">
                     {trip.title}
                   </h3>
                   <div className="space-y-1 text-sm text-gray-600">
@@ -196,7 +199,7 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
                 {trip.interests.slice(0, 3).map(interest => (
                   <span
                     key={interest}
-                    className="px-2 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-medium"
+                    className="px-2 py-1 bg-travel-100 text-travel-700 rounded-full text-xs font-medium"
                   >
                     {interest.replace('-', ' ')}
                   </span>
@@ -214,7 +217,7 @@ export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDelet
 
               <button
                 onClick={() => onViewTrip(trip)}
-                className="w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-2 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 transition-all duration-200"
+                className="w-full bg-travel-gradient text-white py-2 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
               >
                 View Itinerary
               </button>

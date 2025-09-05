@@ -71,10 +71,18 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md border border-travel-100">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-travel-gradient rounded-xl flex items-center justify-center mr-3">
+                <User className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-2xl font-heading font-bold text-gray-800">
+                {isLogin ? 'Welcome Back' : 'Join Travel Genie'}
+              </h2>
+            </div>
+            <h2 className="text-2xl font-heading font-bold text-gray-800">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
             <button
@@ -87,14 +95,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm">
+              <div className="bg-red-50 text-red-700 p-3 rounded-xl text-sm border border-red-200">
                 {error}
               </div>
             )}
 
             <div className="space-y-2">
-              <label className="flex items-center text-sm font-semibold text-gray-700">
-                <Mail className="w-4 h-4 mr-2 text-teal-600" />
+              <label className="flex items-center text-sm font-semibold text-gray-800">
+                <Mail className="w-4 h-4 mr-2 text-travel-600" />
                 Email
               </label>
               <input
@@ -102,14 +110,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-travel-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <label className="flex items-center text-sm font-semibold text-gray-700">
-                <Lock className="w-4 h-4 mr-2 text-teal-600" />
+              <label className="flex items-center text-sm font-semibold text-gray-800">
+                <Lock className="w-4 h-4 mr-2 text-travel-600" />
                 Password
               </label>
               <div className="relative">
@@ -118,7 +126,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-travel-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
                   required
                 />
                 <button
@@ -133,8 +141,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
             {!isLogin && (
               <div className="space-y-2">
-                <label className="flex items-center text-sm font-semibold text-gray-700">
-                  <Lock className="w-4 h-4 mr-2 text-teal-600" />
+                <label className="flex items-center text-sm font-semibold text-gray-800">
+                  <Lock className="w-4 h-4 mr-2 text-travel-600" />
                   Confirm Password
                 </label>
                 <input
@@ -142,7 +150,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm your password"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-travel-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
                   required
                 />
               </div>
@@ -151,10 +159,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 ${
+              className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${
                 loading
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-teal-600 to-teal-700 text-white hover:from-teal-700 hover:to-teal-800 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
+                  : 'bg-travel-gradient text-white hover:shadow-xl transform hover:-translate-y-1'
               }`}
             >
               {loading ? (
@@ -174,7 +182,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 setIsLogin(!isLogin);
                 setError('');
               }}
-              className="text-teal-600 hover:text-teal-700 font-semibold transition-colors"
+              className="text-travel-600 hover:text-travel-700 font-semibold transition-colors"
             >
               {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
             </button>

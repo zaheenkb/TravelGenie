@@ -122,24 +122,30 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
+    <div className="min-h-screen bg-gradient-to-br from-travel-50 via-white to-sage-50 font-travel">
       {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10">
+      <nav className="bg-white/90 backdrop-blur-md border-b border-travel-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <button
               onClick={handleBackToPlanning}
-              className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
+              className="flex items-center space-x-3 text-travel-600 hover:text-travel-700 transition-colors group"
             >
-              <Luggage className="h-8 w-8" />
-              <span className="text-xl font-bold">Travel Genie</span>
+              {/* Logo Placeholder */}
+              <div className="w-10 h-10 bg-travel-gradient rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
+                <Luggage className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-heading font-bold text-gray-800">Travel Genie</span>
+                <span className="text-xs text-travel-600 -mt-1">Your AI Travel Companion</span>
+              </div>
             </button>
             
             <div className="flex items-center space-x-4">
               {user && (
                 <button
                   onClick={() => setCurrentView('saved')}
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  className="bg-sunset-gradient text-white px-4 py-2 rounded-xl font-semibold hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
                 >
                   Saved Trips ({savedTrips.length})
                 </button>
@@ -161,7 +167,7 @@ function App() {
               ) : (
                 <button
                   onClick={() => setShowAuthModal(true)}
-                  className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-4 py-2 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 transition-all duration-200"
+                  className="bg-travel-gradient text-white px-4 py-2 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
                 >
                   Sign In
                 </button>
@@ -172,7 +178,7 @@ function App() {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[calc(100vh-8rem)]">
         {currentView === 'planning' && (
           <TripPlannerForm 
             onPlanTrip={handlePlanTrip} 
@@ -199,6 +205,15 @@ function App() {
           />
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-50 border-t border-gray-200 py-6 mt-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-gray-600 font-medium">
+            Proudly Mentored <span className="text-travel-600 font-semibold">Outskill</span>
+          </p>
+        </div>
+      </footer>
 
       <AuthModal
         isOpen={showAuthModal}

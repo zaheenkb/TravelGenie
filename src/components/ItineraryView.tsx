@@ -121,10 +121,10 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-xl p-8">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 border border-travel-100">
         <button
           onClick={onBack}
-          className="flex items-center text-teal-600 hover:text-teal-700 transition-colors mb-4"
+          className="flex items-center text-travel-600 hover:text-travel-700 transition-colors mb-6 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Planning
@@ -132,7 +132,10 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
 
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">{trip.title}</h1>
+            <div className="flex items-center mb-3">
+              <span className="text-3xl mr-3">🗺️</span>
+              <h1 className="text-3xl font-heading font-bold text-gray-800">{trip.title}</h1>
+            </div>
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
               <div className="flex items-center">
                 <MapPin className="w-4 h-4 mr-1" />
@@ -156,7 +159,7 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
           <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
             <button
               onClick={() => downloadICSFile(trip)}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="bg-travel-gradient text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl transition-all duration-200 flex items-center transform hover:-translate-y-1"
             >
               <Calendar className="w-4 h-4 mr-2" />
               Export to Calendar
@@ -165,7 +168,7 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
             {!isSaved && (
               <button
                 onClick={onSaveTrip}
-                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="bg-sunset-gradient text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl transition-all duration-200 flex items-center transform hover:-translate-y-1"
               >
                 <Save className="w-4 h-4 mr-2" />
                 Save Trip
@@ -178,7 +181,7 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
           {trip.interests.map(interest => (
             <span
               key={interest}
-              className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium"
+              className="px-3 py-1 bg-travel-100 text-travel-700 rounded-full text-sm font-medium"
             >
               {interest.replace('-', ' ')}
             </span>
@@ -189,7 +192,7 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
       {/* Timeline Container */}
       <div className="relative">
         {/* Main Timeline Line */}
-        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-teal-300 via-teal-400 to-teal-300"></div>
+        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-travel-300 via-travel-400 to-travel-300"></div>
 
         {/* Days */}
         <div className="space-y-0">
@@ -200,33 +203,33 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
             return (
               <div key={day.date} className="relative">
                 {/* Sticky Day Header */}
-                <div className="sticky top-16 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+                <div className="sticky top-16 z-20 bg-white/95 backdrop-blur-md border-b border-travel-100">
                   <button
                     onClick={() => toggleDay(day.dayNumber)}
-                    className="w-full text-left p-6 hover:bg-gray-50 transition-colors"
+                    className="w-full text-left p-6 hover:bg-travel-50 transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         {/* Day Number Circle */}
-                        <div className="relative z-10 w-16 h-16 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg mr-6">
+                        <div className="relative z-10 w-16 h-16 bg-travel-gradient rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg mr-6">
                           {day.dayNumber}
                         </div>
                         
                         <div>
-                          <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                          <h2 className="text-2xl font-heading font-bold text-gray-800 mb-1">
                             Day {day.dayNumber}
                           </h2>
                           <div className="flex items-center gap-4">
-                            <p className="text-gray-600">{formatDate(day.date)}</p>
+                            <p className="text-gray-600 font-medium">{formatDate(day.date)}</p>
                             {day.weather && (
-                              <div className="flex items-center text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
+                              <div className="flex items-center text-sm text-gray-600 bg-travel-50 px-3 py-1 rounded-full">
                                 <Cloud className="w-4 h-4 mr-1" />
                                 {day.weather.condition} • {day.weather.temperature}
                               </div>
                             )}
                           </div>
                           {day.weather?.note && (
-                            <p className="text-sm text-blue-600 mt-1 italic">{day.weather.note}</p>
+                            <p className="text-sm text-travel-600 mt-1 italic">{day.weather.note}</p>
                           )}
                         </div>
                       </div>
@@ -253,29 +256,29 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
                       {day.activities.map((activity, activityIndex) => (
                         <div key={activity.id} className="relative">
                           {/* Activity Timeline Dot */}
-                          <div className="absolute -left-20 top-4 w-4 h-4 bg-white border-4 border-teal-400 rounded-full shadow-sm"></div>
+                          <div className="absolute -left-20 top-4 w-4 h-4 bg-white border-4 border-travel-400 rounded-full shadow-sm"></div>
                           
                           {/* Activity Connector Line */}
                           {activityIndex < day.activities.length - 1 && (
-                            <div className="absolute -left-18 top-8 w-0.5 h-16 bg-teal-200"></div>
+                            <div className="absolute -left-18 top-8 w-0.5 h-16 bg-travel-200"></div>
                           )}
                           
                           {/* Activity Card */}
-                          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-200 border border-gray-100">
+                          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-200 border border-travel-100">
                             <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-4 relative">
                               <div className="flex-grow">
                                 <div className="flex items-start justify-between mb-3">
-                                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                                  <h3 className="text-xl font-heading font-semibold text-gray-800 mb-2">
                                     {activity.name}
                                   </h3>
                                   <div className="flex items-center gap-2 ml-4">
-                                    <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
+                                    <span className="bg-travel-100 text-travel-700 px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
                                       {activity.type}
                                     </span>
                                     <button
                                       onClick={() => handleSwapSuggestion(activity.id, activity)}
                                       disabled={loadingSuggestions.has(activity.id)}
-                                      className="p-2 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors disabled:opacity-50"
+                                      className="p-2 text-gray-400 hover:text-travel-600 hover:bg-travel-50 rounded-lg transition-colors disabled:opacity-50"
                                       title="Get alternative suggestions"
                                     >
                                       <RefreshCw className={`w-4 h-4 ${loadingSuggestions.has(activity.id) ? 'animate-spin' : ''}`} />
@@ -284,14 +287,14 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
                                 </div>
                                 
                                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
-                                  <span className="flex items-center bg-gray-50 px-3 py-1 rounded-full">
+                                  <span className="flex items-center bg-gray-50 px-3 py-1 rounded-full font-medium">
                                     <Clock className="w-4 h-4 mr-1" />
                                     {activity.time}
                                   </span>
-                                  <span className="bg-gray-50 px-3 py-1 rounded-full">
+                                  <span className="bg-gray-50 px-3 py-1 rounded-full font-medium">
                                     Duration: {activity.duration}
                                   </span>
-                                  <span className="flex items-center bg-gray-50 px-3 py-1 rounded-full">
+                                  <span className="flex items-center bg-gray-50 px-3 py-1 rounded-full font-medium">
                                     <DollarSign className="w-4 h-4 mr-1" />
                                     {activity.cost}
                                   </span>
@@ -300,13 +303,13 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
                                 <p className="text-gray-700 mb-3 leading-relaxed">{activity.description}</p>
                                 
                                 <div className="flex flex-wrap gap-2">
-                                  <div className="flex items-center text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
+                                  <div className="flex items-center text-sm text-gray-600 bg-travel-50 px-3 py-1 rounded-full font-medium">
                                     <MapPin className="w-3 h-3 mr-1" />
                                     {activity.neighborhood}
                                   </div>
                                   
                                   {activity.travelNote && (
-                                    <div className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm">
+                                    <div className="bg-sunset-50 text-sunset-700 px-3 py-1 rounded-full text-sm font-medium">
                                       🚶 {activity.travelNote}
                                     </div>
                                   )}
@@ -316,38 +319,38 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
                             
                             {/* Swap Suggestions */}
                             {swapSuggestions[activity.id] && (
-                              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                              <div className="mt-4 p-4 bg-travel-50 rounded-xl border border-travel-200">
                                 <div className="flex items-center justify-between mb-3">
-                                  <h4 className="font-semibold text-blue-800">Alternative Suggestions</h4>
+                                  <h4 className="font-semibold text-travel-800">Alternative Suggestions</h4>
                                   <button
                                     onClick={() => handleCancelSuggestions(activity.id)}
-                                    className="text-blue-600 hover:text-blue-800 p-1"
+                                    className="text-travel-600 hover:text-travel-800 p-1"
                                   >
                                     <X className="w-4 h-4" />
                                   </button>
                                 </div>
                                 <div className="space-y-3">
                                   {swapSuggestions[activity.id].map((suggestion: any, index: number) => (
-                                    <div key={index} className="bg-white p-3 rounded-lg border border-blue-100">
+                                    <div key={index} className="bg-white p-3 rounded-xl border border-travel-100">
                                       <div className="flex items-start justify-between">
                                         <div className="flex-grow">
-                                          <h5 className="font-medium text-gray-800 mb-1">{suggestion.name}</h5>
+                                          <h5 className="font-semibold text-gray-800 mb-1">{suggestion.name}</h5>
                                           <p className="text-sm text-gray-600 mb-2">{suggestion.description}</p>
                                           <div className="flex flex-wrap gap-2 text-xs">
-                                            <span className="bg-gray-100 px-2 py-1 rounded">
+                                            <span className="bg-gray-100 px-2 py-1 rounded font-medium">
                                               {suggestion.duration}
                                             </span>
-                                            <span className="bg-gray-100 px-2 py-1 rounded">
+                                            <span className="bg-gray-100 px-2 py-1 rounded font-medium">
                                               {suggestion.cost}
                                             </span>
-                                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                                            <span className="bg-travel-100 text-travel-700 px-2 py-1 rounded font-medium">
                                               {suggestion.neighborhood}
                                             </span>
                                           </div>
                                         </div>
                                         <button
                                           onClick={() => handleAcceptSuggestion(activity.id, suggestion)}
-                                          className="ml-3 p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
+                                          className="ml-3 p-2 text-sage-600 hover:text-sage-800 hover:bg-sage-50 rounded-lg transition-colors"
                                           title="Use this suggestion"
                                         >
                                           <Check className="w-4 h-4" />
@@ -368,7 +371,7 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
                 {/* Day Separator */}
                 {!isLastDay && (
                   <div className="relative py-4">
-                    <div className="absolute left-6 w-8 h-8 bg-gradient-to-r from-teal-300 to-teal-400 rounded-full flex items-center justify-center">
+                    <div className="absolute left-6 w-8 h-8 bg-gradient-to-r from-travel-300 to-travel-400 rounded-full flex items-center justify-center">
                       <div className="w-2 h-2 bg-white rounded-full"></div>
                     </div>
                   </div>
