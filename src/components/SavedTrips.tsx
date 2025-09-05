@@ -1,0 +1,151 @@
+import React from 'react';
+import { ArrowLeft, MapPin, Calendar, DollarSign, Trash2 } from 'lucide-react';
+import { Trip } from '../types';
+
+interface SavedTripsProps {
+  trips: Trip[];
+  onBack: () => void;
+  onViewTrip: (trip: Trip) => void;
+  onDeleteTrip: (tripId: string) => void;
+}
+
+export default function SavedTrips({ trips, onBack, onViewTrip, onDeleteTrip }: SavedTripsProps) {
+  const formatDateRange = (startDate: string, endDate: string) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    
+    if (start.getFullYear() !== end.getFullYear()) {
+      return `${start.toLocaleDateString('en-US', { ...options, year: 'numeric' })} - ${end.toLocaleDateString('en-US', { ...options, year: 'numeric' })}`;
+    } else if (start.getMonth() !== end.getMonth()) {
+      return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', { ...options, year: 'numeric' })}`;
+    } else {
+      return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.getDate()}, ${end.getFullYear()}`;
+    }
+  };
+
+  const getDurationInDays = (startDate: string, endDate: string) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  };
+
+  if (trips.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+        <button
+          onClick={onBack}
+          className="flex items-center text-teal-600 hover:text-teal-700 transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Planning
+        </button>
+
+        <div className="py-12">
+          <div className="text-6xl mb-4">🧳</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">No Saved Trips Yet</h2>
+          <p className="text-gray-600 mb-6">
+            Start planning your next adventure and save it to see it here!
+          </p>
+          <button
+            onClick={onBack}
+            className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            Plan Your First Trip
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-2xl shadow-xl p-8">
+        <button
+          onClick={onBack}
+          className="flex items-center text-teal-600 hover:text-teal-700 transition-colors mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Planning
+        </button>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Saved Trips</h1>
+            <p className="text-gray-600">Your travel memories and future adventures</p>
+          </div>
+          <div className="text-4xl">🗺️</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {trips.map((trip) => (
+          <div
+            key={trip.id}
+            className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+          >
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
+                    {trip.title}
+                  </h3>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <MapPin className="w-3 h-3 mr-1" />
+                      {trip.destination}
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      {formatDateRange(trip.startDate, trip.endDate)}
+                    </div>
+                    <div className="flex items-center">
+                      <DollarSign className="w-3 h-3 mr-1" />
+                      {trip.budget} budget • {getDurationInDays(trip.startDate, trip.endDate)} days
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteTrip(trip.id);
+                  }}
+                  className="text-gray-400 hover:text-red-500 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-1 mb-4">
+                {trip.interests.slice(0, 3).map(interest => (
+                  <span
+                    key={interest}
+                    className="px-2 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-medium"
+                  >
+                    {interest.replace('-', ' ')}
+                  </span>
+                ))}
+                {trip.interests.length > 3 && (
+                  <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                    +{trip.interests.length - 3} more
+                  </span>
+                )}
+              </div>
+
+              <div className="text-xs text-gray-500 mb-4">
+                Saved {new Date(trip.createdAt).toLocaleDateString()}
+              </div>
+
+              <button
+                onClick={() => onViewTrip(trip)}
+                className="w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-2 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 transition-all duration-200"
+              >
+                View Itinerary
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
