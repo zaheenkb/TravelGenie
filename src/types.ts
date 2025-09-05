@@ -1,4 +1,5 @@
 export interface TripInputs {
+  from: string;
   destination: string;
   startDate: string;
   endDate: string;

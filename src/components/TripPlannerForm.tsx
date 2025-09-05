@@ -18,6 +18,7 @@ const interests = [
 
 export default function TripPlannerForm({ onPlanTrip, isGenerating }: TripPlannerFormProps) {
   const [inputs, setInputs] = useState<TripInputs>({
+    from: '',
     destination: '',
     startDate: '',
     endDate: '',
@@ -50,20 +51,35 @@ export default function TripPlannerForm({ onPlanTrip, isGenerating }: TripPlanne
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Destination */}
-        <div className="space-y-2">
-          <label className="flex items-center text-sm font-semibold text-gray-700">
-            <MapPin className="w-4 h-4 mr-2 text-teal-600" />
-            Destination
-          </label>
-          <input
-            type="text"
-            value={inputs.destination}
-            onChange={(e) => setInputs(prev => ({ ...prev, destination: e.target.value }))}
-            placeholder="Where would you like to go?"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-            required
-          />
+        {/* From and Destination */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="flex items-center text-sm font-semibold text-gray-700">
+              <MapPin className="w-4 h-4 mr-2 text-teal-600" />
+              From
+            </label>
+            <input
+              type="text"
+              value={inputs.from}
+              onChange={(e) => setInputs(prev => ({ ...prev, from: e.target.value }))}
+              placeholder="Where are you starting from?"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="flex items-center text-sm font-semibold text-gray-700">
+              <MapPin className="w-4 h-4 mr-2 text-teal-600" />
+              Destination
+            </label>
+            <input
+              type="text"
+              value={inputs.destination}
+              onChange={(e) => setInputs(prev => ({ ...prev, destination: e.target.value }))}
+              placeholder="Where would you like to go?"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+              required
+            />
+          </div>
         </div>
 
         {/* Dates */}
