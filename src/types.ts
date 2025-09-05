@@ -1,6 +1,7 @@
 export interface TripInputs {
   from: string;
   destination: string;
+  travelers: number;
   startDate: string;
   endDate: string;
   budget: 'low' | 'medium' | 'high';
@@ -29,6 +30,7 @@ export interface Trip {
   id: string;
   title: string;
   destination: string;
+  travelers: number;
   startDate: string;
   endDate: string;
   budget: string;

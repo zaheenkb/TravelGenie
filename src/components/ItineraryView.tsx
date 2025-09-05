@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, MapPin, DollarSign, Save, ArrowLeft } from 'lucide-react';
+import { Clock, MapPin, DollarSign, Save, ArrowLeft, Users } from 'lucide-react';
 import { Trip } from '../types';
 
 interface ItineraryViewProps {
@@ -49,6 +49,10 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
               <div className="flex items-center">
                 <Clock className="w-4 h-4 mr-1" />
                 {getDurationInDays()} days
+              </div>
+              <div className="flex items-center">
+                <Users className="w-4 h-4 mr-1" />
+                {trip.travelers} {trip.travelers === 1 ? 'traveler' : 'travelers'}
               </div>
               <div className="flex items-center">
                 <DollarSign className="w-4 h-4 mr-1" />

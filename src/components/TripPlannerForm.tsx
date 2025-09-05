@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Calendar, DollarSign, Clock, Heart } from 'lucide-react';
+import { MapPin, Calendar, DollarSign, Clock, Heart, Users } from 'lucide-react';
 import { TripInputs } from '../types';
 
 interface TripPlannerFormProps {
@@ -20,6 +20,7 @@ export default function TripPlannerForm({ onPlanTrip, isGenerating }: TripPlanne
   const [inputs, setInputs] = useState<TripInputs>({
     from: '',
     destination: '',
+    travelers: 2,
     startDate: '',
     endDate: '',
     budget: 'medium',
@@ -80,6 +81,22 @@ export default function TripPlannerForm({ onPlanTrip, isGenerating }: TripPlanne
               required
             />
           </div>
+        </div>
+
+        {/* Number of Travelers */}
+        <div className="space-y-2">
+          <label className="flex items-center text-sm font-semibold text-gray-700">
+            <Users className="w-4 h-4 mr-2 text-teal-600" />
+            Number of Travelers
+          </label>
+          <input
+            type="number"
+            min="1"
+            max="20"
+            value={inputs.travelers}
+            onChange={(e) => setInputs(prev => ({ ...prev, travelers: parseInt(e.target.value) || 1 }))}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+          />
         </div>
 
         {/* Dates */}

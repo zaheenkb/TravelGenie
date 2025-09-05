@@ -84,6 +84,7 @@ export function generateTrip(inputs: TripInputs): Trip {
     id: Date.now().toString(),
     title: inputs.from ? `${inputs.from} to ${inputs.destination} Adventure` : `${inputs.destination} Adventure`,
     destination: inputs.destination,
+    travelers: inputs.travelers,
     startDate: inputs.startDate,
     endDate: inputs.endDate,
     budget: inputs.budget,

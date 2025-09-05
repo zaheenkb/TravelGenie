@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, MapPin, Calendar, DollarSign, Trash2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, DollarSign, Trash2, Users } from 'lucide-react';
 import { Trip } from '../types';
 
 interface SavedTripsProps {
@@ -98,6 +98,10 @@ export default function SavedTrips({ trips, onBack, onViewTrip, onDeleteTrip }: 
                     <div className="flex items-center">
                       <Calendar className="w-3 h-3 mr-1" />
                       {formatDateRange(trip.startDate, trip.endDate)}
+                    </div>
+                    <div className="flex items-center">
+                      <Users className="w-3 h-3 mr-1" />
+                      {trip.travelers} {trip.travelers === 1 ? 'traveler' : 'travelers'}
                     </div>
                     <div className="flex items-center">
                       <DollarSign className="w-3 h-3 mr-1" />
