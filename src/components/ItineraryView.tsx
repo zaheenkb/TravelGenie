@@ -1,6 +1,7 @@
 import React from 'react';
-import { Clock, MapPin, DollarSign, Save, ArrowLeft, Users, Cloud } from 'lucide-react';
+import { Clock, MapPin, DollarSign, Save, ArrowLeft, Users, Cloud, Calendar } from 'lucide-react';
 import { Trip } from '../types';
+import { downloadICSFile } from '../utils/calendarExport';
 
 interface ItineraryViewProps {
   trip: Trip;
@@ -61,15 +62,25 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
             </div>
           </div>
           
-          {!isSaved && (
+          <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
             <button
-              onClick={onSaveTrip}
-              className="mt-4 md:mt-0 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              onClick={() => downloadICSFile(trip)}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              <Save className="w-4 h-4 mr-2" />
-              Save Trip
+              <Calendar className="w-4 h-4 mr-2" />
+              Export to Calendar
             </button>
-          )}
+            
+            {!isSaved && (
+              <button
+                onClick={onSaveTrip}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Save Trip
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
