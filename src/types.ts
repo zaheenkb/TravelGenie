@@ -36,6 +36,7 @@ export interface Trip {
   id: string;
   title: string;
   destination: string;
+  from?: string;
   travelers: number;
   startDate: string;
   endDate: string;

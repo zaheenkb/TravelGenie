@@ -4,12 +4,13 @@ import { Trip } from '../types';
 
 interface SavedTripsProps {
   trips: Trip[];
+  loading?: boolean;
   onBack: () => void;
   onViewTrip: (trip: Trip) => void;
   onDeleteTrip: (tripId: string) => void;
 }
 
-export default function SavedTrips({ trips, onBack, onViewTrip, onDeleteTrip }: SavedTripsProps) {
+export default function SavedTrips({ trips, loading, onBack, onViewTrip, onDeleteTrip }: SavedTripsProps) {
   const [searchQuery, setSearchQuery] = React.useState('');
   
   // Filter trips based on search query
@@ -38,6 +39,25 @@ export default function SavedTrips({ trips, onBack, onViewTrip, onDeleteTrip }: 
     const end = new Date(endDate);
     return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
   };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+        <button
+          onClick={onBack}
+          className="flex items-center text-teal-600 hover:text-teal-700 transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Planning
+        </button>
+
+        <div className="py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your trips...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (trips.length === 0) {
     return (

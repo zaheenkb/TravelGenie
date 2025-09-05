@@ -1,40 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import { Luggage } from 'lucide-react';
+import { Luggage, User, LogOut } from 'lucide-react';
 import TripPlannerForm from './components/TripPlannerForm';
 import ItineraryView from './components/ItineraryView';
 import SavedTrips from './components/SavedTrips';
+import AuthModal from './components/AuthModal';
 import { TripInputs, Trip } from './types';
 import { generateItinerary } from './utils/api';
+import { useAuth } from './hooks/useAuth';
+import { saveTrip, fetchUserTrips, deleteTrip } from './utils/tripsApi';
 
 type ViewState = 'planning' | 'itinerary' | 'saved';
 
 function App() {
+  const { user, loading: authLoading, signOut } = useAuth();
   const [currentView, setCurrentView] = useState<ViewState>('planning');
   const [currentTrip, setCurrentTrip] = useState<Trip | null>(null);
   const [savedTrips, setSavedTrips] = useState<Trip[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [tripsLoading, setTripsLoading] = useState(false);
 
-  // Load saved trips from localStorage on component mount
+  // Load user trips when user signs in
   useEffect(() => {
-    const saved = localStorage.getItem('travelGenieTrips');
-    if (saved) {
+    if (user) {
+      loadUserTrips();
+    } else {
+      setSavedTrips([]);
+    }
+  }, [user]);
+
+  const loadUserTrips = async () => {
+    if (!user) return;
+    
+    setTripsLoading(true);
+    try {
+      const trips = await fetchUserTrips(user.id);
+      setSavedTrips(trips);
+    } catch (error) {
+      console.error('Error loading trips:', error);
+    } finally {
+      setTripsLoading(false);
+    }
+  };
+
+  const handleSaveTrip = async () => {
+    if (!currentTrip || !user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    try {
+      await saveTrip(currentTrip, user.id);
+      await loadUserTrips(); // Refresh the trips list
+    } catch (error) {
+      console.error('Error saving trip:', error);
+      // Could show a toast notification here
+    }
+  };
+
+  const handleDeleteTrip = async (tripId: string) => {
+    if (!user) return;
+    
+    if (confirm('Are you sure you want to delete this trip?')) {
       try {
-        setSavedTrips(JSON.parse(saved));
+        await deleteTrip(tripId);
+        setSavedTrips(prev => prev.filter(trip => trip.id !== tripId));
+        
+        // If we're currently viewing the deleted trip, go back to planning
+        if (currentTrip && currentTrip.id === tripId) {
+          setCurrentTrip(null);
+          setCurrentView('planning');
+        }
       } catch (error) {
-        console.error('Error loading saved trips:', error);
-        setSavedTrips([]);
+        console.error('Error deleting trip:', error);
       }
     }
-  }, []);
-
-  // Save trips to localStorage whenever savedTrips changes
-  useEffect(() => {
-    try {
-      localStorage.setItem('travelGenieTrips', JSON.stringify(savedTrips));
-    } catch (error) {
-      console.error('Error saving trips:', error);
-    }
-  }, [savedTrips]);
+  };
 
   const handlePlanTrip = async (inputs: TripInputs) => {
     setIsGenerating(true);
@@ -51,34 +92,9 @@ function App() {
     }
   };
 
-  const handleSaveTrip = () => {
-    if (currentTrip) {
-      // Ensure the trip has a unique ID
-      const tripToSave = {
-        ...currentTrip,
-        id: currentTrip.id || `trip_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      };
-      
-      setSavedTrips(prev => [currentTrip, ...prev]);
-      setCurrentTrip(tripToSave);
-    }
-  };
-
   const handleViewSavedTrip = (trip: Trip) => {
     setCurrentTrip(trip);
     setCurrentView('itinerary');
-  };
-
-  const handleDeleteTrip = (tripId: string) => {
-    if (confirm('Are you sure you want to delete this trip?')) {
-      setSavedTrips(prev => prev.filter(trip => trip.id !== tripId));
-      
-      // If we're currently viewing the deleted trip, go back to planning
-      if (currentTrip && currentTrip.id === tripId) {
-        setCurrentTrip(null);
-        setCurrentView('planning');
-      }
-    }
   };
 
   const handleBackToPlanning = () => {
@@ -86,7 +102,24 @@ function App() {
     setCurrentTrip(null);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    setCurrentView('planning');
+    setCurrentTrip(null);
+  };
+
   const isTripSaved = currentTrip && savedTrips.some(trip => trip.id === currentTrip.id);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
@@ -102,12 +135,38 @@ function App() {
               <span className="text-xl font-bold">Travel Genie</span>
             </button>
             
-            <button
-              onClick={() => setCurrentView('saved')}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Saved Trips ({savedTrips.length})
-            </button>
+            <div className="flex items-center space-x-4">
+              {user && (
+                <button
+                  onClick={() => setCurrentView('saved')}
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  Saved Trips ({savedTrips.length})
+                </button>
+              )}
+              
+              {user ? (
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center text-gray-600">
+                    <User className="w-4 h-4 mr-1" />
+                    <span className="text-sm">{user.email}</span>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-4 py-2 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 transition-all duration-200"
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </nav>
@@ -133,12 +192,21 @@ function App() {
         {currentView === 'saved' && (
           <SavedTrips
             trips={savedTrips}
+            loading={tripsLoading}
             onBack={handleBackToPlanning}
             onViewTrip={handleViewSavedTrip}
             onDeleteTrip={handleDeleteTrip}
           />
         )}
       </main>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => {
+          // Trips will be loaded automatically via useEffect
+        }}
+      />
     </div>
   );
 }
