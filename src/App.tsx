@@ -210,7 +210,7 @@ function App() {
       <footer className="bg-gray-50 border-t border-gray-200 py-6 mt-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-gray-600 font-medium">
-            Proudly Mentored <span className="text-travel-600 font-semibold">Outskill</span>
+            Proudly Mentored by <span className="text-travel-600 font-semibold">Outskill</span>
           </p>
         </div>
       </footer>
