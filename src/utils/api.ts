@@ -3,7 +3,7 @@ import { TripInputs, Trip } from '../types';
 // For local development, use localhost:54321 as per supabase/config.toml
 const API_BASE_URL = import.meta.env.VITE_SUPABASE_URL 
   ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`
-  : 'http://localhost:54321/functions/v1';
+  : 'http://localhost:54327/functions/v1';
 
 export async function generateItinerary(inputs: TripInputs): Promise<Trip> {
   try {
