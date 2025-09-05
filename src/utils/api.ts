@@ -1,8 +1,9 @@
 import { TripInputs, Trip } from '../types';
 
+// For local development, use localhost:54321 as per supabase/config.toml
 const API_BASE_URL = import.meta.env.VITE_SUPABASE_URL 
   ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`
-  : '/api';
+  : 'http://localhost:54321/functions/v1';
 
 export async function generateItinerary(inputs: TripInputs): Promise<Trip> {
   try {
@@ -10,7 +11,8 @@ export async function generateItinerary(inputs: TripInputs): Promise<Trip> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(import.meta.env.VITE_SUPABASE_ANON_KEY && {
+        // For local development, we don't need auth headers
+        ...(import.meta.env.VITE_SUPABASE_ANON_KEY && import.meta.env.PROD && {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
         })
       },
