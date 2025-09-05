@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, MapPin, Calendar, DollarSign, Trash2, Users } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, DollarSign, Trash2, Users, Search, X } from 'lucide-react';
 import { Trip } from '../types';
 
 interface SavedTripsProps {
@@ -10,6 +10,15 @@ interface SavedTripsProps {
 }
 
 export default function SavedTrips({ trips, onBack, onViewTrip, onDeleteTrip }: SavedTripsProps) {
+  const [searchQuery, setSearchQuery] = React.useState('');
+  
+  // Filter trips based on search query
+  const filteredTrips = trips.filter(trip =>
+    trip.destination.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    trip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (trip.from && trip.from.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   const formatDateRange = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -69,17 +78,59 @@ export default function SavedTrips({ trips, onBack, onViewTrip, onDeleteTrip }: 
           Back to Planning
         </button>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Saved Trips</h1>
-            <p className="text-gray-600">Your travel memories and future adventures</p>
+            <p className="text-gray-600">
+              {filteredTrips.length} of {trips.length} trips
+              {searchQuery && ` matching "${searchQuery}"`}
+            </p>
           </div>
           <div className="text-4xl">🗺️</div>
         </div>
+
+        {/* Search Bar */}
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search trips by destination..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
+        </div>
       </div>
 
+      {/* No Results Message */}
+      {filteredTrips.length === 0 && searchQuery && (
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="text-4xl mb-4">🔍</div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">No trips found</h3>
+          <p className="text-gray-600 mb-4">
+            No trips match your search for "{searchQuery}"
+          </p>
+          <button
+            onClick={() => setSearchQuery('')}
+            className="text-teal-600 hover:text-teal-700 font-semibold"
+          >
+            Clear search
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trips.map((trip) => (
+        {filteredTrips.map((trip) => (
           <div
             key={trip.id}
             className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
@@ -114,7 +165,8 @@ export default function SavedTrips({ trips, onBack, onViewTrip, onDeleteTrip }: 
                     e.stopPropagation();
                     onDeleteTrip(trip.id);
                   }}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
+                  className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded hover:bg-red-50"
+                  title="Delete trip"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

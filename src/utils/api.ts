@@ -29,11 +29,24 @@ export async function generateItinerary(inputs: TripInputs): Promise<Trip> {
       throw new Error(result.error || 'Failed to generate itinerary');
     }
 
-    return result.data;
+    // Ensure the trip has a unique ID
+    const trip = result.data;
+    if (!trip.id) {
+      trip.id = `trip_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+    
+    return trip;
   } catch (error) {
     console.error('API Error:', error);
     // Fallback to local generation if API fails
     const { generateTrip } = await import('./tripGenerator');
-    return generateTrip(inputs);
+    const trip = generateTrip(inputs);
+    
+    // Ensure fallback trip also has a unique ID
+    if (!trip.id) {
+      trip.id = `trip_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+    
+    return trip;
   }
 }

@@ -18,13 +18,22 @@ function App() {
   useEffect(() => {
     const saved = localStorage.getItem('travelGenieTrips');
     if (saved) {
-      setSavedTrips(JSON.parse(saved));
+      try {
+        setSavedTrips(JSON.parse(saved));
+      } catch (error) {
+        console.error('Error loading saved trips:', error);
+        setSavedTrips([]);
+      }
     }
   }, []);
 
   // Save trips to localStorage whenever savedTrips changes
   useEffect(() => {
-    localStorage.setItem('travelGenieTrips', JSON.stringify(savedTrips));
+    try {
+      localStorage.setItem('travelGenieTrips', JSON.stringify(savedTrips));
+    } catch (error) {
+      console.error('Error saving trips:', error);
+    }
   }, [savedTrips]);
 
   const handlePlanTrip = async (inputs: TripInputs) => {
@@ -44,7 +53,14 @@ function App() {
 
   const handleSaveTrip = () => {
     if (currentTrip) {
+      // Ensure the trip has a unique ID
+      const tripToSave = {
+        ...currentTrip,
+        id: currentTrip.id || `trip_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      };
+      
       setSavedTrips(prev => [currentTrip, ...prev]);
+      setCurrentTrip(tripToSave);
     }
   };
 
@@ -54,7 +70,15 @@ function App() {
   };
 
   const handleDeleteTrip = (tripId: string) => {
-    setSavedTrips(prev => prev.filter(trip => trip.id !== tripId));
+    if (confirm('Are you sure you want to delete this trip?')) {
+      setSavedTrips(prev => prev.filter(trip => trip.id !== tripId));
+      
+      // If we're currently viewing the deleted trip, go back to planning
+      if (currentTrip && currentTrip.id === tripId) {
+        setCurrentTrip(null);
+        setCurrentView('planning');
+      }
+    }
   };
 
   const handleBackToPlanning = () => {
