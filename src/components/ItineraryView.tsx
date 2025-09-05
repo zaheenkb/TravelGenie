@@ -1,5 +1,5 @@
-import React from 'react';
-import { Clock, MapPin, DollarSign, Save, ArrowLeft, Users, Cloud, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Clock, MapPin, DollarSign, Save, ArrowLeft, Users, Cloud, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 import { Trip } from '../types';
 import { downloadICSFile } from '../utils/calendarExport';
 
@@ -11,6 +11,40 @@ interface ItineraryViewProps {
 }
 
 export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: ItineraryViewProps) {
+  const [collapsedDays, setCollapsedDays] = useState<Set<number>>(new Set());
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile and set initial collapsed state
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      
+      // On mobile, collapse all days by default
+      if (mobile) {
+        setCollapsedDays(new Set(trip.itinerary.map(day => day.dayNumber)));
+      } else {
+        setCollapsedDays(new Set());
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [trip.itinerary]);
+
+  const toggleDay = (dayNumber: number) => {
+    setCollapsedDays(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(dayNumber)) {
+        newSet.delete(dayNumber);
+      } else {
+        newSet.add(dayNumber);
+      }
+      return newSet;
+    });
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
@@ -95,84 +129,142 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
         </div>
       </div>
 
-      {/* Itinerary */}
-      <div className="space-y-6">
-        {trip.itinerary.map((day) => (
-          <div key={day.date} className="bg-white rounded-2xl shadow-xl p-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                Day {day.dayNumber}
-              </h2>
-              <div className="flex items-center justify-between">
-                <p className="text-gray-600">{formatDate(day.date)}</p>
-                {day.weather && (
-                  <div className="flex items-center text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
-                    <Cloud className="w-4 h-4 mr-1" />
-                    {day.weather.condition} • {day.weather.temperature}
+      {/* Timeline Container */}
+      <div className="relative">
+        {/* Main Timeline Line */}
+        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-teal-300 via-teal-400 to-teal-300"></div>
+
+        {/* Days */}
+        <div className="space-y-0">
+          {trip.itinerary.map((day, dayIndex) => {
+            const isCollapsed = collapsedDays.has(day.dayNumber);
+            const isLastDay = dayIndex === trip.itinerary.length - 1;
+
+            return (
+              <div key={day.date} className="relative">
+                {/* Sticky Day Header */}
+                <div className="sticky top-16 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+                  <button
+                    onClick={() => toggleDay(day.dayNumber)}
+                    className="w-full text-left p-6 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        {/* Day Number Circle */}
+                        <div className="relative z-10 w-16 h-16 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg mr-6">
+                          {day.dayNumber}
+                        </div>
+                        
+                        <div>
+                          <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                            Day {day.dayNumber}
+                          </h2>
+                          <div className="flex items-center gap-4">
+                            <p className="text-gray-600">{formatDate(day.date)}</p>
+                            {day.weather && (
+                              <div className="flex items-center text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
+                                <Cloud className="w-4 h-4 mr-1" />
+                                {day.weather.condition} • {day.weather.temperature}
+                              </div>
+                            )}
+                          </div>
+                          {day.weather?.note && (
+                            <p className="text-sm text-blue-600 mt-1 italic">{day.weather.note}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Collapse/Expand Icon */}
+                      <div className="flex items-center text-gray-400">
+                        <span className="text-sm mr-2">
+                          {day.activities.length} activities
+                        </span>
+                        {isCollapsed ? (
+                          <ChevronDown className="w-5 h-5" />
+                        ) : (
+                          <ChevronUp className="w-5 h-5" />
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Activities */}
+                {!isCollapsed && (
+                  <div className="pl-24 pr-6 pb-8">
+                    <div className="space-y-6">
+                      {day.activities.map((activity, activityIndex) => (
+                        <div key={activity.id} className="relative">
+                          {/* Activity Timeline Dot */}
+                          <div className="absolute -left-20 top-4 w-4 h-4 bg-white border-4 border-teal-400 rounded-full shadow-sm"></div>
+                          
+                          {/* Activity Connector Line */}
+                          {activityIndex < day.activities.length - 1 && (
+                            <div className="absolute -left-18 top-8 w-0.5 h-16 bg-teal-200"></div>
+                          )}
+                          
+                          {/* Activity Card */}
+                          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-200 border border-gray-100">
+                            <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-4">
+                              <div className="flex-grow">
+                                <div className="flex items-start justify-between mb-3">
+                                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                                    {activity.name}
+                                  </h3>
+                                  <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-medium ml-4 whitespace-nowrap">
+                                    {activity.type}
+                                  </span>
+                                </div>
+                                
+                                <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+                                  <span className="flex items-center bg-gray-50 px-3 py-1 rounded-full">
+                                    <Clock className="w-4 h-4 mr-1" />
+                                    {activity.time}
+                                  </span>
+                                  <span className="bg-gray-50 px-3 py-1 rounded-full">
+                                    Duration: {activity.duration}
+                                  </span>
+                                  <span className="flex items-center bg-gray-50 px-3 py-1 rounded-full">
+                                    <DollarSign className="w-4 h-4 mr-1" />
+                                    {activity.cost}
+                                  </span>
+                                </div>
+                                
+                                <p className="text-gray-700 mb-3 leading-relaxed">{activity.description}</p>
+                                
+                                <div className="flex flex-wrap gap-2">
+                                  <div className="flex items-center text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
+                                    <MapPin className="w-3 h-3 mr-1" />
+                                    {activity.neighborhood}
+                                  </div>
+                                  
+                                  {activity.travelNote && (
+                                    <div className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm">
+                                      🚶 {activity.travelNote}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Day Separator */}
+                {!isLastDay && (
+                  <div className="relative py-4">
+                    <div className="absolute left-6 w-8 h-8 bg-gradient-to-r from-teal-300 to-teal-400 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
                   </div>
                 )}
               </div>
-              {day.weather?.note && (
-                <p className="text-sm text-blue-600 mt-1 italic">{day.weather.note}</p>
-              )}
-            </div>
-
-            <div className="space-y-4">
-              {day.activities.map((activity, index) => (
-                <div key={activity.id} className="relative">
-                  {/* Timeline connector */}
-                  {index < day.activities.length - 1 && (
-                    <div className="absolute left-6 top-16 w-0.5 h-16 bg-gradient-to-b from-teal-300 to-teal-200"></div>
-                  )}
-                  
-                  <div className="flex gap-4">
-                    {/* Timeline dot */}
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                      {index + 1}
-                    </div>
-                    
-                    {/* Activity card */}
-                    <div className="flex-grow bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
-                      <div className="flex flex-col md:flex-row md:items-start justify-between mb-2">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                            {activity.name}
-                          </h3>
-                          <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-2">
-                            <span className="flex items-center">
-                              <Clock className="w-3 h-3 mr-1" />
-                              {activity.time}
-                            </span>
-                            <span>Duration: {activity.duration}</span>
-                            <span className="flex items-center">
-                              <DollarSign className="w-3 h-3 mr-1" />
-                              {activity.cost}
-                            </span>
-                          </div>
-                        </div>
-                        <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded-full text-xs font-medium">
-                          {activity.type}
-                          <span className="text-teal-600">
-                            📍 {activity.neighborhood}
-                          </span>
-                        </span>
-                      </div>
-                      
-                      <p className="text-gray-700 mb-2">{activity.description}</p>
-                      
-                      {activity.travelNote && (
-                        <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs inline-flex items-center">
-                          <MapPin className="w-3 h-3 mr-1" />
-                          {activity.travelNote}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
