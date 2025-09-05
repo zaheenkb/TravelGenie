@@ -324,55 +324,8 @@ const corsHeaders = {
 };
 
 async function getWeatherData(destination: string, startDate: string, endDate: string) {
-  try {
-    // Use Open-Meteo API (free, no API key required)
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const today = new Date();
-    
-    // Only fetch weather if dates are within next 7 days
-    const daysDiff = Math.ceil((start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysDiff > 7 || daysDiff < -1) {
-      return null;
-    }
-
-    // For demo purposes, we'll use a generic location (latitude/longitude)
-    // In a real app, you'd geocode the destination first
-    const lat = 40.7128; // Default to NYC coordinates
-    const lon = -74.0060;
-    
-    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&start_date=${startDate}&end_date=${endDate}&timezone=auto`;
-    
-    const response = await fetch(weatherUrl);
-    if (!response.ok) {
-      return null;
-    }
-    
-    const data = await response.json();
-    
-    // Map weather codes to conditions
-    const getWeatherCondition = (code: number) => {
-      if (code === 0) return 'Clear';
-      if (code <= 3) return 'Partly Cloudy';
-      if (code <= 48) return 'Foggy';
-      if (code <= 67) return 'Rainy';
-      if (code <= 77) return 'Snowy';
-      if (code <= 82) return 'Showers';
-      if (code <= 99) return 'Thunderstorms';
-      return 'Variable';
-    };
-
-    return data.daily.time.map((date: string, index: number) => ({
-      date,
-      condition: getWeatherCondition(data.daily.weathercode[index]),
-      maxTemp: Math.round(data.daily.temperature_2m_max[index]),
-      minTemp: Math.round(data.daily.temperature_2m_min[index]),
-      unit: data.daily_units.temperature_2m_max
-    }));
-  } catch (error) {
-    console.error('Weather API error:', error);
-    return null;
-  }
+  // Temporarily disable weather API to fix fetch errors in local development
+  return null;
 }
 
 function generateTimeSlots(pace: string, openHours: { start: number; end: number }) {
