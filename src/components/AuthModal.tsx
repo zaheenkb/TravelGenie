@@ -74,13 +74,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md border border-travel-100">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
+            <div className="flex items-center mr-4">
               <div className="w-10 h-10 bg-travel-gradient rounded-xl flex items-center justify-center mr-3">
                 <User className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-2xl font-heading font-bold text-gray-800">
-                {isLogin ? 'Welcome Back' : 'Join Travel Genie'}
-              </h2>
             </div>
             <h2 className="text-2xl font-heading font-bold text-gray-800">
               {isLogin ? 'Welcome Back' : 'Create Account'}
