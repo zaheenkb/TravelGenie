@@ -5,15 +5,19 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Fallback to local development values if env vars are not set
+const defaultUrl = 'http://localhost:54321';
+const defaultAnonKey = 'your-anon-key';
+
+// Configure auth URL for local development
+export const supabase = createClient(
   supabaseUrl || defaultUrl, 
   supabaseAnonKey || defaultAnonKey, 
-
-    // Configure auth URL for local development
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      url: supabaseUrl ? undefined : 'http://localhost:54326'
-    url: import.meta.env.VITE_SUPABASE_URL ? undefined : 'http://localhost:54326'
+  {
+    auth: {
+      url: import.meta.env.VITE_SUPABASE_URL ? undefined : 'http://localhost:54326'
+    }
   }
-});
+);
 
 export type Database = {
   public: {
