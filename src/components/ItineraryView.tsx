@@ -304,7 +304,15 @@ export default function ItineraryView({ trip, onSaveTrip, onBack, isSaved }: Iti
                                 
                                 <div className="flex flex-wrap gap-2">
                                   <div className="flex items-center text-sm text-gray-600 bg-travel-50 px-3 py-1 rounded-full font-medium">
-                                    <MapPin className="w-3 h-3 mr-1" />
+                                    <a
+                                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${activity.name} ${activity.neighborhood} ${trip.destination}`)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center hover:text-travel-600 transition-colors"
+                                      title="Open in Google Maps"
+                                    >
+                                      <MapPin className="w-3 h-3 mr-1" />
+                                    </a>
                                     {activity.neighborhood}
                                   </div>
                                   
