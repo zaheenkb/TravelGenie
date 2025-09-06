@@ -86,7 +86,10 @@ function App() {
       setCurrentView('itinerary');
     } catch (error) {
       console.error('Failed to generate trip:', error);
-      // Handle error - could show a toast notification
+      
+      // Show user-friendly error message
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to generate trip: ${errorMessage}`);
     } finally {
       setIsGenerating(false);
     }

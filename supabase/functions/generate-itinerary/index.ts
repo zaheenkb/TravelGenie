@@ -1,3 +1,5 @@
+import { corsHeaders } from '../_shared/cors.ts';
+
 interface ItineraryRequest {
   destination: string;
   from?: string;
@@ -317,17 +319,6 @@ const travelNotes = [
   'Bus route available (25-35 minutes)'
 ];
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
-
-async function getWeatherData(destination: string, startDate: string, endDate: string) {
-  // Temporarily disable weather API to fix fetch errors in local development
-  return null;
-}
-
 function generateTimeSlots(pace: string, openHours: { start: number; end: number }) {
   const slots = {
     relaxed: [9, 11.5, 14, 16.5],
@@ -408,15 +399,18 @@ function generateDayActivities(
   return activities;
 }
 
+// Handle preflight OPTIONS request first - this is critical for CORS
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 200,
+  // Handle CORS preflight request
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { 
       headers: corsHeaders,
+      status: 200 
     });
   }
 
   try {
+    // Only allow POST requests for the actual function
     if (req.method !== 'POST') {
       return new Response(
         JSON.stringify({ success: false, error: 'Method not allowed' }),
@@ -427,12 +421,24 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const inputs: ItineraryRequest = await req.json();
+    // Parse JSON body safely
+    let inputs: ItineraryRequest;
+    try {
+      inputs = await req.json();
+    } catch (error) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON in request body' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
     
     // Validate required fields
     if (!inputs.destination || !inputs.startDate || !inputs.endDate) {
       return new Response(
-        JSON.stringify({ success: false, error: 'Missing required fields' }),
+        JSON.stringify({ success: false, error: 'Missing required fields: destination, startDate, endDate' }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -444,8 +450,8 @@ Deno.serve(async (req: Request) => {
     const endDate = new Date(inputs.endDate);
     const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     
-    // Get weather data if dates are within next 7 days
-    const weatherData = await getWeatherData(inputs.destination, inputs.startDate, inputs.endDate);
+    // Weather API is disabled for now to avoid fetch errors
+    const weatherData = null;
     
     const itinerary: DayPlan[] = [];
     
@@ -477,7 +483,7 @@ Deno.serve(async (req: Request) => {
     const response: ItineraryResponse = {
       success: true,
       data: {
-        id: Date.now().toString(),
+        id: `trip_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         title: inputs.from ? `${inputs.from} to ${inputs.destination} Adventure` : `${inputs.destination} Adventure`,
         destination: inputs.destination,
         travelers: inputs.travelers,
@@ -491,6 +497,7 @@ Deno.serve(async (req: Request) => {
       }
     };
 
+    // Always include CORS headers in successful responses
     return new Response(
       JSON.stringify(response),
       { 
@@ -501,6 +508,8 @@ Deno.serve(async (req: Request) => {
 
   } catch (error) {
     console.error('Error generating itinerary:', error);
+    
+    // Always include CORS headers in error responses too
     return new Response(
       JSON.stringify({ 
         success: false, 

@@ -39,6 +39,23 @@ export default function TripPlannerForm({ onPlanTrip, isGenerating }: TripPlanne
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic client-side validation
+    if (!inputs.destination.trim()) {
+      alert('Please enter a destination');
+      return;
+    }
+    
+    if (!inputs.startDate || !inputs.endDate) {
+      alert('Please select both start and end dates');
+      return;
+    }
+    
+    if (new Date(inputs.startDate) > new Date(inputs.endDate)) {
+      alert('Start date must be before end date');
+      return;
+    }
+    
     onPlanTrip(inputs);
   };
 

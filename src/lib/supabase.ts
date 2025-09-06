@@ -1,10 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'http://localhost:54321';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+// Read environment variables - these must be prefixed with VITE_ to be accessible in the browser
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Fallback to local development values if env vars are not set
+  supabaseUrl || defaultUrl, 
+  supabaseAnonKey || defaultAnonKey, 
+
+    // Configure auth URL for local development
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
+      url: supabaseUrl ? undefined : 'http://localhost:54326'
     url: import.meta.env.VITE_SUPABASE_URL ? undefined : 'http://localhost:54326'
   }
 });
