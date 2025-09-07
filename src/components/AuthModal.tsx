@@ -21,6 +21,19 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if Supabase is configured
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseAnonKey || 
+        supabaseUrl === 'your-supabase-url' || 
+        supabaseAnonKey === 'your-supabase-anon-key') {
+      setError('Supabase is not configured. Please connect to Supabase first.');
+      setLoading(false);
+      return;
+    }
+    
     setError('');
     setLoading(true);
 

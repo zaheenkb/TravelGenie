@@ -1,23 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Read environment variables - these must be prefixed with VITE_ to be accessible in the browser
+// Get environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Fallback to local development values if env vars are not set
-const defaultUrl = 'http://localhost:54321';
-const defaultAnonKey = 'your-anon-key';
+// Check if environment variables are properly configured
+if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your-supabase-url' || supabaseAnonKey === 'your-supabase-anon-key') {
+  console.warn('Supabase environment variables are not properly configured. Please connect to Supabase using the "Connect to Supabase" button.');
+}
 
-// Configure auth URL for local development
-export const supabase = createClient(
-  supabaseUrl || defaultUrl, 
-  supabaseAnonKey || defaultAnonKey, 
-  {
-    auth: {
-      url: import.meta.env.VITE_SUPABASE_URL ? undefined : 'http://localhost:54326'
-    }
-  }
-);
+// Create Supabase client
+export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
 
 export type Database = {
   public: {

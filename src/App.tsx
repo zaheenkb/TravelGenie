@@ -129,6 +129,22 @@ function App() {
       {/* Navigation */}
       <nav className="bg-white/90 backdrop-blur-md border-b border-travel-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Supabase Connection Notice */}
+          {(!import.meta.env.VITE_SUPABASE_URL || 
+            !import.meta.env.VITE_SUPABASE_ANON_KEY || 
+            import.meta.env.VITE_SUPABASE_URL === 'your-supabase-url' || 
+            import.meta.env.VITE_SUPABASE_ANON_KEY === 'your-supabase-anon-key') && (
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+              <div className="flex">
+                <div className="ml-3">
+                  <p className="text-sm text-yellow-700">
+                    <strong>Supabase not connected:</strong> Please click the "Connect to Supabase" button in the top right to enable authentication and cloud features.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div className="flex justify-between h-16 items-center">
             <button
               onClick={handleBackToPlanning}

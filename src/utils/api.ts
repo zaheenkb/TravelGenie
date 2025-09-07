@@ -15,46 +15,39 @@ interface EdgeFunctionResponse {
 }
 
 export async function generateItinerary(inputs: TripInputs): Promise<Trip> {
-  // Log environment variables in development for debugging
-  if (import.meta.env.DEV) {
-    console.log('SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-    console.log('ANON_KEY defined:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
-  }
-
-  // Validate required environment variables
-  if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-    console.warn('Missing Supabase environment variables, falling back to local generation');
+  // Check if Supabase is properly configured
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseAnonKey || 
+      supabaseUrl === 'your-supabase-url' || 
+      supabaseAnonKey === 'your-supabase-anon-key') {
+    console.warn('Supabase not configured, using local generation');
     return fallbackToLocalGeneration(inputs);
   }
 
   try {
-    console.log('Calling Edge Function: generate-itinerary');
-    
-    // Use Supabase client to invoke the Edge Function
-    // This handles CORS and authentication automatically
     const { data, error } = await supabase.functions.invoke('generate-itinerary', {
       body: inputs
     });
 
-    // Log the response for debugging
-    console.log('Edge Function response:', { data, error });
-
     if (error) {
-      throw new Error(`Edge Function error: ${error.message || 'Unknown error'}`);
+      console.warn('Edge Function failed, falling back to local generation:', error);
+      return fallbackToLocalGeneration(inputs);
     }
 
-    // Parse the response from the Edge Function
     const response = data as EdgeFunctionResponse;
     
     if (!response.success) {
-      throw new Error(response.error || 'Failed to generate itinerary');
+      console.warn('Edge Function returned error, falling back to local generation:', response.error);
+      return fallbackToLocalGeneration(inputs);
     }
 
     if (!response.data) {
-      throw new Error('No data returned from Edge Function');
+      console.warn('No data from Edge Function, falling back to local generation');
+      return fallbackToLocalGeneration(inputs);
     }
 
-    // Ensure the trip has a unique ID
     const trip = response.data;
     if (!trip.id) {
       trip.id = `trip_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -63,15 +56,7 @@ export async function generateItinerary(inputs: TripInputs): Promise<Trip> {
     return trip;
 
   } catch (error: any) {
-    console.error('API Error Details:', {
-      functionName: 'generate-itinerary',
-      method: 'POST',
-      error: error.message,
-      stack: error.stack
-    });
-
-    // If the Edge Function fails, fall back to local generation
-    console.warn('Edge Function failed, falling back to local generation');
+    console.warn('Edge Function error, falling back to local generation:', error.message);
     return fallbackToLocalGeneration(inputs);
   }
 }
