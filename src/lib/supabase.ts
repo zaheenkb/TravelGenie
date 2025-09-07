@@ -5,12 +5,22 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Check if environment variables are properly configured
-if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your-supabase-url' || supabaseAnonKey === 'your-supabase-anon-key') {
+const isSupabaseConfigured = supabaseUrl && 
+  supabaseAnonKey && 
+  supabaseUrl !== 'your-supabase-url' && 
+  supabaseAnonKey === 'your-supabase-anon-key' &&
+  supabaseUrl.startsWith('https://') &&
+  supabaseUrl.includes('.supabase.co');
+
+if (!isSupabaseConfigured) {
   console.warn('Supabase environment variables are not properly configured. Please connect to Supabase using the "Connect to Supabase" button.');
 }
 
 // Create Supabase client
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder-anon-key'
+);
 
 export type Database = {
   public: {
