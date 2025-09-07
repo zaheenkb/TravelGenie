@@ -4,11 +4,20 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Replace placeholder values with valid fallback URLs
+const validSupabaseUrl = supabaseUrl === 'your-supabase-url' || !supabaseUrl 
+  ? 'https://placeholder.supabase.co' 
+  : supabaseUrl;
+
+const validSupabaseAnonKey = supabaseAnonKey === 'your-supabase-anon-key' || !supabaseAnonKey
+  ? 'placeholder-anon-key'
+  : supabaseAnonKey;
+
 // Check if environment variables are properly configured
-const isSupabaseConfigured = supabaseUrl && 
-  supabaseAnonKey && 
+const isSupabaseConfigured = supabaseUrl &&
+  supabaseAnonKey &&
   supabaseUrl !== 'your-supabase-url' && 
-  supabaseAnonKey === 'your-supabase-anon-key' &&
+  supabaseAnonKey !== 'your-supabase-anon-key' &&
   supabaseUrl.startsWith('https://') &&
   supabaseUrl.includes('.supabase.co');
 
@@ -18,8 +27,8 @@ if (!isSupabaseConfigured) {
 
 // Create Supabase client
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
-  supabaseAnonKey || 'placeholder-anon-key'
+  validSupabaseUrl,
+  validSupabaseAnonKey
 );
 
 export type Database = {
